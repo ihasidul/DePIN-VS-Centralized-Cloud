@@ -1,0 +1,9 @@
+transformers
+datasets
+peft
+trl
+bitsandbytes
+accelerate
+prometheus_client
+requests
+

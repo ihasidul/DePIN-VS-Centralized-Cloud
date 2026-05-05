@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+
+  trainer:
+    build: .
+    container_name: trainer
+    runtime: nvidia
+    ports:
+      - "8000:8000"
+    environment:
+      - PLATFORM=aws
+      - PUSHGATEWAY=http://MONITOR_IP:9091
+    volumes:
+      - ./data:/workspace/data
+      - ./output:/workspace/output
+    command: python train.py
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    network_mode: host
+    pid: host
+    restart: always
+
+  dcgm-exporter:
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:3.3.5-3.1.8-ubuntu22.04
+    container_name: dcgm-exporter
+    runtime: nvidia
+    ports:
+      - "9400:9400"
+    restart: always
+

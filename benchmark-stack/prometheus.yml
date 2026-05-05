@@ -1,0 +1,49 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+
+  - job_name: aws-node
+    static_configs:
+      - targets: ['AWS_WORKER_IP:9100']
+        labels:
+          platform: aws
+          instance: p5.4xlarge
+
+  - job_name: aws-gpu
+    static_configs:
+      - targets: ['AWS_WORKER_IP:9400']
+        labels:
+          platform: aws
+          instance: p5.4xlarge
+
+  - job_name: aws-trainer
+    static_configs:
+      - targets: ['AWS_WORKER_IP:8000']
+        labels:
+          platform: aws
+
+  - job_name: akash-node
+    static_configs:
+      - targets: ['AKASH_IP:9100']
+        labels:
+          platform: akash
+          instance: h100
+
+  - job_name: akash-gpu
+    static_configs:
+      - targets: ['AKASH_IP:9400']
+        labels:
+          platform: akash
+          instance: h100
+
+  - job_name: akash-trainer
+    static_configs:
+      - targets: ['AKASH_IP:8000']
+        labels:
+          platform: akash
+
+  - job_name: pushgateway
+    static_configs:
+      - targets: ['localhost:9091']
+
