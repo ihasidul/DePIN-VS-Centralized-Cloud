@@ -1,3 +1,19 @@
+# Terraform
 *.tfstate
 *.tfstate.backup
+.terraform/
+
+# Python
+__pycache__/
+*.pyc
+
+# Outputs
+output/
+logs/
+
+# Secrets
+.env
+
+# Ansible retry
+*.retry
 
