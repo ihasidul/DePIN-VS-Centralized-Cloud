@@ -84,7 +84,7 @@ peft_config = LoraConfig(
 # Training Args
 # --------------------
 args = SFTConfig(
-    output_dir="./output",
+    output_dir="/data/output",
     per_device_train_batch_size=1,
     gradient_accumulation_steps=4,
     num_train_epochs=1,
@@ -133,4 +133,4 @@ t1 = time.time()
 
 print(f"Training done in {t1 - t0}s")
 
-trainer.save_model("./output/final")
+trainer.save_model("/data/output/final")
