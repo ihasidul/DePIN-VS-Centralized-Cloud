@@ -59,6 +59,8 @@ services:
           datasets \
           peft \
           trl \
+          "bitsandbytes>=0.46.1" \
+          kernels \
           accelerate \
           tensorboard \
           prometheus-client \
@@ -66,7 +68,8 @@ services:
           pandas \
           numpy \
           scipy \
-          pynvml
+          pynvml \
+          torchaudio --index-url https://download.pytorch.org/whl/cu121
 
         if [ -f requirements.txt ]; then
           echo "Installing requirements.txt..."
