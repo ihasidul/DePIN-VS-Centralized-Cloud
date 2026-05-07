@@ -32,10 +32,10 @@ def format_example(example):
 
 dataset = dataset.map(format_example)
  """
+model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
 
-model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 
 def tokenize_and_truncate(example):
