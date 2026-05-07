@@ -32,6 +32,20 @@ def format_example(example):
 
 dataset = dataset.map(format_example)
 
+def tokenize_and_truncate(example):
+    tokens = tokenizer(
+        example["text"],
+        truncation=True,
+        max_length=1024,
+        padding=False,
+    )
+    tokens["labels"] = tokens["input_ids"].copy()
+    return tokens
+
+dataset = dataset.map(
+    tokenize_and_truncate,
+    remove_columns=dataset.column_names,
+)
 # --------------------
 # Model
 # --------------------
@@ -79,7 +93,6 @@ args = SFTConfig(
     bf16=True,
     fp16=False,
     report_to="none",
-    dataset_text_field="text",
     gradient_checkpointing=True,
 )
 
@@ -91,9 +104,7 @@ trainer = SFTTrainer(
     train_dataset=dataset,
     peft_config=peft_config,
     args=args,
-    max_seq_length=1024,
 )
-
 # --------------------
 # Training loop hook (FIXED)
 # --------------------
