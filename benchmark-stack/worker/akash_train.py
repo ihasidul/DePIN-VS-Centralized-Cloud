@@ -15,7 +15,7 @@ loss_gauge = Gauge("training_loss", "Training loss", ["platform"])
 step_gauge = Gauge("global_step", "Training step", ["platform"])
 samples_counter = Counter("samples_processed_total", "Samples processed", ["platform"])
 
-start_http_server(8000)
+start_http_server(8001)
 
 print("Prometheus metrics exposed on :8000")
 
