@@ -1,0 +1,206 @@
+version: "2.0"
+
+services:
+  trainer:
+    image: nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
+
+    env:
+      - PLATFORM=akash
+      - REPO_URL=https://github.com/ihasidul/DePIN-VS-Centralized-Cloud.git
+      - REPO_DIR=/workspace/DePIN-VS-Centralized-Cloud
+      - PROMETHEUS_PORT=8000
+
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+
+        echo "Updating apt packages..."
+        apt-get update
+
+        echo "Installing system dependencies..."
+        DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+          git \
+          python3 \
+          python3-pip \
+          python3-venv \
+          curl \
+          wget \
+          ca-certificates \
+          procps \
+          htop \
+          build-essential \
+          pciutils
+
+        ln -sf /usr/bin/python3 /usr/bin/python
+
+        echo "Upgrading pip..."
+        python -m pip install --upgrade pip setuptools wheel
+
+        echo "Preparing workspace..."
+        mkdir -p /workspace
+
+        echo "Cloning repository..."
+        if [ ! -d "$REPO_DIR/.git" ]; then
+          git clone "$REPO_URL" "$REPO_DIR"
+        else
+          cd "$REPO_DIR"
+          git pull
+        fi
+
+        cd "$REPO_DIR"
+
+        echo "Installing Python dependencies..."
+        pip install --no-cache-dir \
+          torch \
+          torchvision \
+          transformers \
+          datasets \
+          peft \
+          trl \
+          accelerate \
+          tensorboard \
+          prometheus-client \
+          requests \
+          pandas \
+          numpy \
+          scipy \
+          pynvml
+
+        if [ -f requirements.txt ]; then
+          echo "Installing requirements.txt..."
+          pip install --no-cache-dir -r requirements.txt
+        fi
+
+        echo "Creating Prometheus metrics exporter..."
+
+        cat > /tmp/akash_metrics_server.py << 'PY'
+        import os
+        import time
+        import socket
+        import subprocess
+
+        from prometheus_client import start_http_server, Gauge, Counter
+
+        port = int(os.environ.get("PROMETHEUS_PORT", "8000"))
+
+        platform = os.environ.get("PLATFORM", "akash")
+        hostname = socket.gethostname()
+
+        gpu_util = Gauge(
+            "akash_gpu_utilization_percent",
+            "GPU utilization percentage",
+            ["platform", "host"]
+        )
+
+        gpu_mem_used = Gauge(
+            "akash_gpu_memory_used_mb",
+            "GPU memory used in MB",
+            ["platform", "host"]
+        )
+
+        gpu_mem_total = Gauge(
+            "akash_gpu_memory_total_mb",
+            "GPU memory total in MB",
+            ["platform", "host"]
+        )
+
+        gpu_temp = Gauge(
+            "akash_gpu_temperature_celsius",
+            "GPU temperature in Celsius",
+            ["platform", "host"]
+        )
+
+        heartbeat = Counter(
+            "akash_training_heartbeat_total",
+            "Heartbeat counter",
+            ["platform", "host"]
+        )
+
+        start_http_server(port)
+
+        print(f"Prometheus exporter running on port {port}", flush=True)
+
+        while True:
+            try:
+                heartbeat.labels(platform, hostname).inc()
+
+                output = subprocess.check_output(
+                    [
+                        "nvidia-smi",
+                        "--query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu",
+                        "--format=csv,noheader,nounits"
+                    ],
+                    text=True
+                )
+
+                line = output.strip().splitlines()[0]
+
+                util, mem_used, mem_total, temp = [
+                    float(v.strip()) for v in line.split(",")
+                ]
+
+                gpu_util.labels(platform, hostname).set(util)
+                gpu_mem_used.labels(platform, hostname).set(mem_used)
+                gpu_mem_total.labels(platform, hostname).set(mem_total)
+                gpu_temp.labels(platform, hostname).set(temp)
+
+            except Exception as e:
+                print(f"Metrics collection error: {e}", flush=True)
+
+            time.sleep(5)
+        PY
+
+        echo "Starting Prometheus exporter..."
+        python /tmp/akash_metrics_server.py &
+
+        echo "========================================="
+        echo "Repository cloned successfully"
+        echo "Metrics endpoint available on:"
+        echo "http://<AKASH_HOST>:8000/metrics"
+        echo "========================================="
+
+        echo "Container will stay alive for Akash shell access..."
+
+        tail -f /dev/null
+
+    expose:
+      - port: 8000
+        as: 8000
+        proto: TCP
+        to:
+          - global: true
+
+profiles:
+  compute:
+    trainer:
+      resources:
+        cpu:
+          units: "8000m"
+
+        memory:
+          size: 32Gi
+
+        storage:
+          size: 100Gi
+
+        gpu:
+          units: 1
+          attributes:
+            vendor:
+              nvidia:
+                - model: h100
+
+  placement:
+    akash:
+      pricing:
+        trainer:
+          denom: uakt
+          amount: 10000
+
+deployment:
+  trainer:
+    akash:
+      profile: trainer
+      count: 1
