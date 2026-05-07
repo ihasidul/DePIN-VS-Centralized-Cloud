@@ -35,6 +35,7 @@ dataset = dataset.map(format_example)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
 
+model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 
 def tokenize_and_truncate(example):
@@ -55,7 +56,6 @@ dataset = dataset.map(
 # Model
 # --------------------
 # model_name = "meta-llama/Llama-2-7b-chat-hf"
-model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
