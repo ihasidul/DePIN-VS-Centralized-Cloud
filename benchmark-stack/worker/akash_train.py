@@ -3,7 +3,7 @@ import time
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, BitsAndBytesConfig
 from peft import LoraConfig
-from trl import SFTTrainer
+from trl import SFTTrainer, SFTConfig
 from prometheus_client import start_http_server, Gauge, Counter
 
 # --------------------
@@ -67,7 +67,7 @@ peft_config = LoraConfig(
 # --------------------
 # Training Args
 # --------------------
-args = TrainingArguments(
+args = SFTConfig(
     output_dir="./output",
     per_device_train_batch_size=1,
     gradient_accumulation_steps=4,
@@ -76,7 +76,8 @@ args = TrainingArguments(
     save_steps=200,
     learning_rate=2e-4,
     fp16=True,
-    report_to="none"
+    report_to="none",
+    dataset_text_field="text",
 )
 
 # --------------------
@@ -85,9 +86,8 @@ args = TrainingArguments(
 trainer = SFTTrainer(
     model=model,
     train_dataset=dataset,
-    dataset_text_field="text",
     peft_config=peft_config,
-    args=args
+    args=args,
 )
 
 # --------------------
