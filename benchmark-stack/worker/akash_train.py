@@ -1,5 +1,6 @@
 import os
 import time
+import torch
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, BitsAndBytesConfig
 from peft import LoraConfig
@@ -42,7 +43,7 @@ tokenizer.pad_token = tokenizer.eos_token
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
-    bnb_4bit_compute_dtype="float16",
+    bnb_4bit_compute_dtype=torch.bfloat16,
     bnb_4bit_quant_type="nf4",
     bnb_4bit_use_double_quant=True,
 )
@@ -75,9 +76,12 @@ args = SFTConfig(
     logging_steps=1,
     save_steps=200,
     learning_rate=2e-4,
-    fp16=True,
+    bf16=True,
+    fp16=False,
     report_to="none",
     dataset_text_field="text",
+    max_seq_length=1024,
+    gradient_checkpointing=True,
 )
 
 # --------------------
