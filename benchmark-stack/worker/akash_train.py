@@ -21,7 +21,7 @@ samples_counter = Counter("samples_processed_total", "Samples processed", ["plat
 # Dataset
 # --------------------
 dataset = load_dataset("databricks/databricks-dolly-15k")["train"]
-
+""" 
 def format_example(example):
     return {
         "text":
@@ -31,6 +31,11 @@ def format_example(example):
     }
 
 dataset = dataset.map(format_example)
+ """
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+tokenizer.pad_token = tokenizer.eos_token
+
+
 
 def tokenize_and_truncate(example):
     tokens = tokenizer(
@@ -51,9 +56,6 @@ dataset = dataset.map(
 # --------------------
 # model_name = "meta-llama/Llama-2-7b-chat-hf"
 model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-tokenizer.pad_token = tokenizer.eos_token
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
