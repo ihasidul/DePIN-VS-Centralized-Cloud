@@ -1,9 +1,18 @@
 transformers
 datasets
 peft
-trl
-bitsandbytes
 accelerate
 prometheus_client
 requests
+torch
+torchvision
+trl
+"bitsandbytes>=0.46.1"
+kernels
+tensorboard
+prometheus-client
+pandas
+numpy
+scipy
+pynvml
 
