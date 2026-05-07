@@ -15,9 +15,6 @@ loss_gauge = Gauge("training_loss", "Training loss", ["platform"])
 step_gauge = Gauge("global_step", "Training step", ["platform"])
 samples_counter = Counter("samples_processed_total", "Samples processed", ["platform"])
 
-start_http_server(8001)
-
-print("Prometheus metrics exposed on :8000")
 
 # --------------------
 # Dataset
@@ -37,7 +34,8 @@ dataset = dataset.map(format_example)
 # --------------------
 # Model
 # --------------------
-model_name = "meta-llama/Llama-2-7b-chat-hf"
+# model_name = "meta-llama/Llama-2-7b-chat-hf"
+model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
