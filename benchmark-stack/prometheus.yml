@@ -9,9 +9,12 @@ scrape_configs:
   # ============================================
   - job_name: akash-trainer
     metrics_path: /metrics
+    scrape_interval: 5s
+
     static_configs:
       - targets:
           - 'provider.h100.ams.val.akash.pub:30296'
+
         labels:
           platform: akash
           gpu: h100
@@ -19,14 +22,17 @@ scrape_configs:
 
   # ============================================
   # OPTIONAL AWS METRICS
-  # Uncomment when AWS instance is available
+  # ENABLE THESE WHEN AWS INSTANCE IS READY
   # ============================================
 
   # - job_name: aws-node
   #   metrics_path: /metrics
+  #   scrape_interval: 5s
+  #
   #   static_configs:
   #     - targets:
   #         - 'AWS_WORKER_IP:9100'
+  #
   #       labels:
   #         platform: aws
   #         gpu: h100
@@ -34,9 +40,12 @@ scrape_configs:
 
   # - job_name: aws-gpu
   #   metrics_path: /metrics
+  #   scrape_interval: 5s
+  #
   #   static_configs:
   #     - targets:
   #         - 'AWS_WORKER_IP:9400'
+  #
   #       labels:
   #         platform: aws
   #         gpu: h100
@@ -44,9 +53,12 @@ scrape_configs:
 
   # - job_name: aws-trainer
   #   metrics_path: /metrics
+  #   scrape_interval: 5s
+  #
   #   static_configs:
   #     - targets:
   #         - 'AWS_WORKER_IP:8000'
+  #
   #       labels:
   #         platform: aws
   #         gpu: h100
@@ -57,6 +69,7 @@ scrape_configs:
   # ============================================
   - job_name: pushgateway
     honor_labels: true
+
     static_configs:
       - targets:
-          - 'localhost:9091'
+          - 'pushgateway:9091'
