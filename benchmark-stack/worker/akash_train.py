@@ -16,12 +16,15 @@ loss_gauge = Gauge("training_loss", "Training loss", ["platform"])
 step_gauge = Gauge("global_step", "Training step", ["platform"])
 samples_counter = Counter("samples_processed_total", "Samples processed", ["platform"])
 
+model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+tokenizer.pad_token = tokenizer.eos_token
+
 
 # --------------------
 # Dataset
 # --------------------
 dataset = load_dataset("databricks/databricks-dolly-15k")["train"]
-""" 
 def format_example(example):
     return {
         "text":
@@ -31,10 +34,6 @@ def format_example(example):
     }
 
 dataset = dataset.map(format_example)
- """
-model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-tokenizer.pad_token = tokenizer.eos_token
 
 
 
