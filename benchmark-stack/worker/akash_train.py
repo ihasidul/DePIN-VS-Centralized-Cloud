@@ -80,7 +80,6 @@ args = SFTConfig(
     fp16=False,
     report_to="none",
     dataset_text_field="text",
-    max_seq_length=1024,
     gradient_checkpointing=True,
 )
 
@@ -92,6 +91,7 @@ trainer = SFTTrainer(
     train_dataset=dataset,
     peft_config=peft_config,
     args=args,
+    max_seq_length=1024,
 )
 
 # --------------------
