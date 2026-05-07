@@ -53,28 +53,12 @@ services:
 
         echo "Installing Python dependencies..."
         pip install --no-cache-dir \
-          torch \
-          torchvision \
-          transformers \
-          datasets \
-          peft \
-          trl \
-          "bitsandbytes>=0.46.1" \
-          kernels \
-          accelerate \
-          tensorboard \
-          prometheus-client \
-          requests \
-          pandas \
-          numpy \
-          scipy \
-          pynvml \
-          torchaudio --index-url https://download.pytorch.org/whl/cu121
+        torch \
+        torchvision \
+        torchaudio \
+        --index-url https://download.pytorch.org/whl/cu121
 
-        if [ -f requirements.txt ]; then
-          echo "Installing requirements.txt..."
-          pip install --no-cache-dir -r requirements.txt
-        fi
+        pip install --no-cache-dir -r benchmark-stack/worker/requirements.txt
 
         echo "Creating Prometheus metrics exporter..."
 
@@ -174,6 +158,10 @@ services:
         proto: TCP
         to:
           - global: true
+    params:
+      storage:
+        data:
+          mount: /data
 
 profiles:
   compute:
@@ -186,8 +174,11 @@ profiles:
           size: 32Gi
 
         storage:
-          size: 100Gi
-
+          - name: data
+            size: 100Gi
+            attributes:
+              persistent: true
+              class: beta3
         gpu:
           units: 1
           attributes:
