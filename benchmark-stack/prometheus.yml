@@ -1,49 +1,62 @@
 global:
   scrape_interval: 5s
+  evaluation_interval: 5s
 
 scrape_configs:
 
-  - job_name: aws-node
-    static_configs:
-      - targets: ['AWS_WORKER_IP:9100']
-        labels:
-          platform: aws
-          instance: p5.4xlarge
-
-  - job_name: aws-gpu
-    static_configs:
-      - targets: ['AWS_WORKER_IP:9400']
-        labels:
-          platform: aws
-          instance: p5.4xlarge
-
-  - job_name: aws-trainer
-    static_configs:
-      - targets: ['AWS_WORKER_IP:8000']
-        labels:
-          platform: aws
-
-  - job_name: akash-node
-    static_configs:
-      - targets: ['AKASH_IP:9100']
-        labels:
-          platform: akash
-          instance: h100
-
-  - job_name: akash-gpu
-    static_configs:
-      - targets: ['AKASH_IP:9400']
-        labels:
-          platform: akash
-          instance: h100
-
+  # ============================================
+  # AKASH TRAINER METRICS
+  # ============================================
   - job_name: akash-trainer
+    metrics_path: /metrics
     static_configs:
-      - targets: ['AKASH_IP:8000']
+      - targets:
+          - 'provider.h100.ams.val.akash.pub:30296'
         labels:
           platform: akash
+          gpu: h100
+          exporter: custom-trainer
 
+  # ============================================
+  # OPTIONAL AWS METRICS
+  # Uncomment when AWS instance is available
+  # ============================================
+
+  # - job_name: aws-node
+  #   metrics_path: /metrics
+  #   static_configs:
+  #     - targets:
+  #         - 'AWS_WORKER_IP:9100'
+  #       labels:
+  #         platform: aws
+  #         gpu: h100
+  #         exporter: node-exporter
+
+  # - job_name: aws-gpu
+  #   metrics_path: /metrics
+  #   static_configs:
+  #     - targets:
+  #         - 'AWS_WORKER_IP:9400'
+  #       labels:
+  #         platform: aws
+  #         gpu: h100
+  #         exporter: dcgm-exporter
+
+  # - job_name: aws-trainer
+  #   metrics_path: /metrics
+  #   static_configs:
+  #     - targets:
+  #         - 'AWS_WORKER_IP:8000'
+  #       labels:
+  #         platform: aws
+  #         gpu: h100
+  #         exporter: custom-trainer
+
+  # ============================================
+  # PUSHGATEWAY
+  # ============================================
   - job_name: pushgateway
+    honor_labels: true
     static_configs:
-      - targets: ['localhost:9091']
-
+      - targets:
+          - 'localhost:9091'
