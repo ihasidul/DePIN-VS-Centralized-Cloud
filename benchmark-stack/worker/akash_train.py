@@ -1,7 +1,7 @@
 import os
 import time
 from datasets import load_dataset
-from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments
+from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, BitsAndBytesConfig
 from peft import LoraConfig
 from trl import SFTTrainer
 from prometheus_client import start_http_server, Gauge, Counter
@@ -40,11 +40,19 @@ model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
 
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_compute_dtype="float16",
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_use_double_quant=True,
+)
+
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     device_map="auto",
-    load_in_4bit=True
+    quantization_config=bnb_config,
 )
+
 
 # --------------------
 # LoRA
