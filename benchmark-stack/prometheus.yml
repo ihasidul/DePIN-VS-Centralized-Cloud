@@ -13,7 +13,7 @@ scrape_configs:
 
     static_configs:
       - targets:
-          - 'provider.h100.ams.val.akash.pub:30296'
+          - 'provider.h100.ams.val.akash.pub:32445'
 
         labels:
           platform: akash
