@@ -89,7 +89,7 @@ args = SFTConfig(
     gradient_accumulation_steps=4,
 
     # Long-running benchmark mode
-    max_steps=1000000,
+    max_steps=55000,
 
     logging_steps=1,
     save_strategy="steps",
