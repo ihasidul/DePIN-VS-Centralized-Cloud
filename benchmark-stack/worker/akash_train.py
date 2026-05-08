@@ -87,9 +87,14 @@ args = SFTConfig(
     output_dir="/data/output",
     per_device_train_batch_size=1,
     gradient_accumulation_steps=4,
-    num_train_epochs=1,
+
+    # Long-running benchmark mode
+    max_steps=1000000,
+
     logging_steps=1,
-    save_steps=200,
+    save_strategy="steps",
+    save_steps=500,
+
     learning_rate=2e-4,
     bf16=True,
     fp16=False,
