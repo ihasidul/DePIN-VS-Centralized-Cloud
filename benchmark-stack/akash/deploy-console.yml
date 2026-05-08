@@ -150,6 +150,11 @@ services:
 
         echo "Container will stay alive for Akash shell access..."
 
+        mkdir -p /data/output
+        mkdir -p /data/logs
+        echo "Starting training script..."
+        nohup timeout 8h python /workspace/DePIN-VS-Centralized-Cloud/benchmark-stack/worker/akash_train.py > /data/logs/akash_train_8h.log 2>&1 &
+        echo "Training started in background. Logs are being written to /data/logs/akash_train_8h.log"
         tail -f /dev/null
 
     expose:
