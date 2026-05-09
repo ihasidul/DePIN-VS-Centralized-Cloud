@@ -21,48 +21,20 @@ scrape_configs:
           exporter: custom-trainer
 
   # ============================================
-  # OPTIONAL AWS METRICS
-  # ENABLE THESE WHEN AWS INSTANCE IS READY
+  # AWS TRAINER METRICS
   # ============================================
+  - job_name: aws-trainer
+    metrics_path: /metrics
+    scrape_interval: 5s
 
-  # - job_name: aws-node
-  #   metrics_path: /metrics
-  #   scrape_interval: 5s
-  #
-  #   static_configs:
-  #     - targets:
-  #         - 'AWS_WORKER_IP:9100'
-  #
-  #       labels:
-  #         platform: aws
-  #         gpu: h100
-  #         exporter: node-exporter
+    static_configs:
+      - targets:
+          - '13.42.50.165:8000'
 
-  # - job_name: aws-gpu
-  #   metrics_path: /metrics
-  #   scrape_interval: 5s
-  #
-  #   static_configs:
-  #     - targets:
-  #         - 'AWS_WORKER_IP:9400'
-  #
-  #       labels:
-  #         platform: aws
-  #         gpu: h100
-  #         exporter: dcgm-exporter
-
-  # - job_name: aws-trainer
-  #   metrics_path: /metrics
-  #   scrape_interval: 5s
-  #
-  #   static_configs:
-  #     - targets:
-  #         - 'AWS_WORKER_IP:8000'
-  #
-  #       labels:
-  #         platform: aws
-  #         gpu: h100
-  #         exporter: custom-trainer
+        labels:
+          platform: aws
+          gpu: h100
+          exporter: custom-trainer
 
   # ============================================
   # PUSHGATEWAY
